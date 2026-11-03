@@ -1,4 +1,4 @@
-# Maze 3D – Das Labyrinth der Schatten
+# Maze 3D 
 
 Ein Horror-Labyrinth in der Ego-Perspektive. Finde alle Schlüssel, öffne das Tor und entkomme, bevor dich der Wächter erwischt.
 Allein oder mit bis zu 4 Spielern im Netzwerk, im Koop oder mit einem Spieler als Wächter.
