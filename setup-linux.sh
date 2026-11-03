@@ -37,7 +37,14 @@ fi
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 echo "Lade Version $VERSION herunter ..."
-curl -fL --progress-bar "$URL" -o "$TMP/maze3d.tar.gz"
+ok=0
+for try in 1 2 3 4 5; do                                  # bei Abbruch: weitermachen, wo es aufgehoert hat
+    if curl -fL --progress-bar --connect-timeout 15 -C - "$URL" -o "$TMP/maze3d.tar.gz"; then ok=1; break; fi
+    echo "Download abgebrochen - neuer Versuch ($try/5) ..."
+    sleep 2
+done
+[ "$ok" = 1 ] || { echo "Fehler: Download fehlgeschlagen. Bitte Internetverbindung pruefen und nochmal versuchen."; exit 1; }
+tar -tzf "$TMP/maze3d.tar.gz" >/dev/null 2>&1 || { echo "Fehler: Die heruntergeladene Datei ist beschaedigt. Bitte nochmal versuchen."; exit 1; }
 
 mkdir -p "$DIR" "$BIN" "$APPS"
 tar -xzf "$TMP/maze3d.tar.gz" -C "$TMP"

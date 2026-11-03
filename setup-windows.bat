@@ -33,7 +33,11 @@ try {
 
     Write-Host "Lade Version $($rel.tag_name) herunter ($([math]::Round($asset.size / 1MB, 1)) MB) ..."
     $zip = Join-Path $env:TEMP 'maze3d-setup.zip'
-    Invoke-WebRequest $asset.browser_download_url -OutFile $zip -UseBasicParsing
+    for ($try = 1; $try -le 5; $try++) {                         # bei Abbruch noch einmal versuchen
+        try { Invoke-WebRequest $asset.browser_download_url -OutFile $zip -UseBasicParsing; break }
+        catch { if ($try -eq 5) { throw } ; Write-Host "Download abgebrochen - neuer Versuch ($try/5) ..." -ForegroundColor Yellow; Start-Sleep 2 }
+    }
+    if ((Get-Item $zip).Length -ne $asset.size) { throw 'Die heruntergeladene Datei ist unvollstaendig. Bitte nochmal versuchen.' }
 
     New-Item -ItemType Directory -Force -Path $dir | Out-Null
     Expand-Archive -Path $zip -DestinationPath $dir -Force      # Spielstaende und Einstellungen im Ordner bleiben erhalten
